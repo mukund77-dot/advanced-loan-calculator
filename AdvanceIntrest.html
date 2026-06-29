@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Advanced Loan Calculator</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        .container{
+            width: 450px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        h1{
+            text-align: center;
+        }
+
+        label{
+            font-weight: bold;
+        }
+
+        input, select{
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button{
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #00b386;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background: #009973;
+        }
+
+        .result{
+            margin-top: 20px;
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .dark-mode{
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .dark-mode .container{
+            background: #2c2c2c;
+            color: white;
+        }
+
+        .dark-mode .result{
+            background: #444;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Advanced Loan Calculator</h1>
+
+    <label>Principal Amount</label>
+    <input type="number" id="principal" oninput="calculateLoan()">
+
+    <label>Interest Rate (%)</label>
+    <input type="number" id="rate" oninput="calculateLoan()">
+
+    <label>Tenure (Months)</label>
+    <input type="number" id="months" oninput="calculateLoan()">
+
+    <label>Currency</label>
+    <select id="currency" onchange="calculateLoan()">
+        <option value="₹">INR (₹)</option>
+        <option value="$">USD ($)</option>
+        <option value="€">EUR (€)</option>
+        <option value="£">GBP (£)</option>
+    </select>
+
+    <button onclick="toggleDarkMode()">Dark Mode</button>
+
+    <button onclick="downloadPDF()">Download PDF</button>
+
+    <div class="result">
+
+        <p id="interest"></p>
+
+        <p id="total"></p>
+
+        <p id="emi"></p>
+
+    </div>
+
+    <canvas id="loanChart"></canvas>
+
+</div>
+
+<script>
+
+let chart;
+
+function calculateLoan()
+{
+    let p = Number(document.getElementById("principal").value);
+    let r = Number(document.getElementById("rate").value);
+    let months = Number(document.getElementById("months").value);
+    let currency = document.getElementById("currency").value;
+
+    if(p <= 0 || r <= 0 || months <= 0)
+    {
+        return;
+    }
+
+    // Compound Interest Formula
+    let yearlyRate = r / 100;
+    let years = months / 12;
+
+    let totalAmount = p * Math.pow((1 + yearlyRate), years);
+
+    let compoundInterest = totalAmount - p;
+
+    let emi = totalAmount / months;
+
+    document.getElementById("interest").innerHTML =
+        "Compound Interest: " + currency + " " + compoundInterest.toFixed(2);
+
+    document.getElementById("total").innerHTML =
+        "Total Amount: " + currency + " " + totalAmount.toFixed(2);
+
+    document.getElementById("emi").innerHTML =
+        "Monthly EMI: " + currency + " " + emi.toFixed(2);
+
+    generateChart(p, compoundInterest);
+}
+
+function generateChart(principal, interest)
+{
+    let ctx = document.getElementById("loanChart");
+
+    if(chart)
+    {
+        chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+
+        type: 'pie',
+
+        data: {
+
+            labels: ['Principal Amount', 'Interest'],
+
+            datasets: [{
+                data: [principal, interest]
+            }]
+        }
+    });
+}
+
+function toggleDarkMode()
+{
+    document.body.classList.toggle("dark-mode");
+}
+
+async function downloadPDF()
+{
+    const { jsPDF } = window.jspdf;
+
+    let doc = new jsPDF();
+
+    let interest =
+        document.getElementById("interest").innerText;
+
+    let total =
+        document.getElementById("total").innerText;
+
+    let emi =
+        document.getElementById("emi").innerText;
+
+    doc.text("Loan Report", 20, 20);
+
+    doc.text(interest, 20, 40);
+
+    doc.text(total, 20, 60);
+
+    doc.text(emi, 20, 80);
+
+    doc.save("loan-report.pdf");
+}
+
+</script>
+
+</body>
+
+</html>
