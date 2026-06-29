@@ -2,7 +2,13 @@
 <html>
 
 <head>
-    <title>Advanced Loan Calculator</title>
+    <title>Advanced Loan Calculator - EMI & Compound Interest Calculator</title>
+
+<meta name="description" content="Free Advanced Loan Calculator to calculate EMI, compound interest, total repayment amount and loan reports online.">
+
+<meta name="keywords" content="loan calculator, EMI calculator, compound interest calculator, advanced loan calculator, EMI calculation">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,7 +29,8 @@
         }
 
         .container{
-            width: 450px;
+    width: 90%;
+    max-width: 450px;
             background: white;
             padding: 25px;
             border-radius: 12px;
@@ -94,6 +101,10 @@
 <div class="container">
 
     <h1>Advanced Loan Calculator</h1>
+
+    <p>
+Calculate EMI, compound interest, total repayment amount and generate loan reports instantly.
+</p>
 
     <label>Principal Amount</label>
     <input type="number" id="principal" oninput="calculateLoan()">
